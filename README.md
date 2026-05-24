@@ -1,6 +1,5 @@
-# Fírmala, Schrödinger – Computer Vision System
+# Fírmala, Schrödinger – Capitulo Visión por Computadora
 
-# ------------------ESTRUCTURA DEL README----------
 
 ## Descripción General del Proyecto
 Breve descripción del problema que resuelve el proyecto, su propósito y el enfoque general adoptado.
@@ -46,7 +45,7 @@ Hardware requerido para un correcto funcionamiento
 
 ```bash
 # 1. Clonar el repositorio
-git clone https://github.com/usuario/firma-schrodinger.git
+git clone https://github.com/LorenaSDLS/firmala-schrodinger-futbotmx.git
 
 # 2. Entrar al proyecto
 cd firma-schrodinger

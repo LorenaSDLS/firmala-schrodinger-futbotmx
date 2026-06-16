@@ -1,0 +1,12 @@
+.DS_Store
+__pycache__/
+*.pyc
+
+venv_clean/
+outputs/
+inputs/
+runs/
+
+Analizador de video/API_sam3.json
+
+yolov8n.pt

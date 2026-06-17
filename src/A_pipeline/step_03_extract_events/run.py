@@ -19,16 +19,20 @@ def run_step_03(output_directory: str | Path) -> dict:
             f"No se encontro quick_detections.jsonl en: {output_directory}"
         )
 
-    events, summary = generate_events(detections_path)
+    events, summary, tracks = generate_events(detections_path)
 
     events_path = output_directory / "match_events.json"
     summary_path = output_directory / "match_summary.json"
+    tracks_path = output_directory / "match_tracks.json"
 
     with events_path.open("w", encoding="utf-8") as file:
         json.dump(events, file, indent=4, ensure_ascii=False)
 
     with summary_path.open("w", encoding="utf-8") as file:
         json.dump(summary, file, indent=4, ensure_ascii=False)
+
+    with tracks_path.open("w", encoding="utf-8") as file:
+        json.dump(tracks, file, indent=4, ensure_ascii=False)
 
     possession_chart_path = output_directory / "possession_chart.png"
     object_paths_path = output_directory / "object_paths.png"
@@ -47,6 +51,7 @@ def run_step_03(output_directory: str | Path) -> dict:
     print(f"Rutas objetos:      {object_paths_path}")
     print(f"Timeline eventos:   {event_timeline_path}")
     print(f"Eventos detectados: {summary['total_events']}")
+    print(f"Tracks JSON:        {tracks_path}")
     print("=" * 55 + "\n")
 
     return {
@@ -56,6 +61,7 @@ def run_step_03(output_directory: str | Path) -> dict:
         "object_paths_path": str(object_paths_path),
         "event_timeline_path": str(event_timeline_path),
         "summary": summary,
+        "tracks_path": str(tracks_path),
     }
 
 

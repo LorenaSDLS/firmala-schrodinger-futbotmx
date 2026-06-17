@@ -14,3 +14,4 @@ accelerate
 huggingface-hub
 safetensors
 pillow
+mesa

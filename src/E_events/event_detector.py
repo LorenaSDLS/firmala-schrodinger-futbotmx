@@ -218,17 +218,84 @@ def read_detection_records(detections_path: str | Path) -> list[dict[str, Any]]:
 
     return records
 
+def create_track_point(
+    frame_index: int,
+    timestamp_seconds: float,
+    bbox,
+    confidence: float,
+    visible: bool = True,
+    extra: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    cx, cy = bbox.center
+
+    point = {
+        "frame_index": frame_index,
+        "timestamp_seconds": timestamp_seconds,
+        "x_px": round(cx, 2),
+        "y_px": round(cy, 2),
+        "bbox_xyxy": bbox.to_xyxy(),
+        "confidence": confidence,
+        "visible": visible,
+    }
+
+    if extra:
+        point.update(extra)
+
+    return point
 
 def generate_events(detections_path: str | Path) -> tuple[list[dict], dict]:
     detector = EventDetector()
     records = read_detection_records(detections_path)
 
     possession_frames: dict[str, int] = {}
+    tracks = {
+        "robots": {},
+        "ball": [],
+    }
     total_frames = 0
 
     for record in records:
         detector.process_frame_record(record)
         total_frames += 1
+
+        frame_index = detector.game_state.frame_index
+        timestamp_seconds = detector.game_state.timestamp_seconds
+
+        for robot_id, robot in detector.game_state.robots.items():
+            tracks["robots"].setdefault(robot_id, []).append(
+                create_track_point(
+                    frame_index=frame_index,
+                    timestamp_seconds=timestamp_seconds,
+                    bbox=robot.bbox,
+                    confidence=robot.confidence,
+                    visible=robot.active,
+                    extra={
+                        "robot_id": robot_id,
+                        "active": robot.active,
+                        "has_ball": robot.has_ball,
+                        "frames_missing": robot.frames_missing,
+                    },
+                )
+            )
+    
+
+            ball = detector.game_state.ball
+
+            if ball is not None:
+                tracks["ball"].append(
+                    create_track_point(
+                        frame_index=frame_index,
+                        timestamp_seconds=timestamp_seconds,
+                        bbox=ball.bbox,
+                        confidence=ball.confidence,
+                        visible=ball.visible,
+                        extra={
+                            "object_id": "ball",
+                            "owner_robot_id": ball.owner_robot_id,
+                            "frames_missing": ball.frames_missing,
+                        },
+                    )
+                )
 
         ball = detector.game_state.ball
         if ball is not None and ball.owner_robot_id is not None:
@@ -257,4 +324,12 @@ def generate_events(detections_path: str | Path) -> tuple[list[dict], dict]:
             summary["event_counts"].get(event.event_type, 0) + 1
         )
 
-    return [asdict(event) for event in detector.events], summary
+    summary["track_counts"] = {
+    "robots": {
+        robot_id: len(points)
+        for robot_id, points in tracks["robots"].items()
+    },
+    "ball": len(tracks["ball"]),
+}
+
+    return [asdict(event) for event in detector.events], summary, tracks

@@ -16,6 +16,8 @@ class GameState:
     ball: Ball | None = None
     field: Field | None = None
     referee_hand: RefereeHand | None = None
+    max_robots: int = 4
+    robot_match_distance: float = 180.0
 
     def update_from_frame_record(self, frame_record: dict[str, Any]) -> None:
         self.frame_index = int(frame_record["frame_index"])
@@ -40,7 +42,11 @@ class GameState:
             confidence = float(detection.get("confidence", 0.0))
 
             if class_name == "robot":
-                robot_id = self._resolve_robot_id(detection, len(seen_robot_ids))
+                robot_id = self._resolve_robot_id(
+                    detection=detection,
+                    bbox=bbox,
+                    seen_robot_ids=seen_robot_ids,
+                    )
                 seen_robot_ids.add(robot_id)
                 self._update_robot(robot_id, bbox, confidence)
 
@@ -63,17 +69,66 @@ class GameState:
 
         self._update_ball_owner()
 
+    def _next_robot_id(self) -> str:
+        index = 0
+
+        while f"robot_{index}" in self.robots:
+            index += 1
+
+        return f"robot_{index}"
+    
+
+    def _closest_robot_id_any(self, bbox: BBox) -> str:
+        closest_robot_id = None
+        closest_distance = float("inf")
+
+        for robot_id, robot in self.robots.items():
+            distance = robot.distance_to_bbox(bbox)
+
+            if distance < closest_distance:
+                closest_distance = distance
+                closest_robot_id = robot_id
+
+        if closest_robot_id is None:
+            return self._next_robot_id()
+
+        return closest_robot_id
+
     def _resolve_robot_id(
         self,
         detection: dict[str, Any],
-        fallback_index: int,
+        bbox: BBox,
+        seen_robot_ids: set[str],
     ) -> str:
         tracking_id = detection.get("tracking_id")
 
         if tracking_id is not None:
             return f"robot_{tracking_id}"
 
-        return f"robot_{fallback_index}"
+        closest_robot_id = None
+        closest_distance = float("inf")
+
+        for robot_id, robot in self.robots.items():
+            if robot_id in seen_robot_ids:
+                continue
+
+            distance = robot.distance_to_bbox(bbox)
+
+            if distance < closest_distance:
+                closest_distance = distance
+                closest_robot_id = robot_id
+
+        if closest_robot_id is not None:
+            if closest_distance <= self.robot_match_distance:
+                return closest_robot_id
+
+            if len(self.robots) >= self.max_robots:
+                return closest_robot_id
+
+        if len(self.robots) < self.max_robots:
+            return self._next_robot_id()
+
+        return self._closest_robot_id_any(bbox)
 
     def _update_robot(
         self,
@@ -87,12 +142,12 @@ class GameState:
                 bbox=bbox,
                 confidence=confidence,
             )
-        else:
-            self.robots[robot_id].update(
-                frame_index=self.frame_index,
-                bbox=bbox,
-                confidence=confidence,
-            )
+
+        self.robots[robot_id].update(
+            frame_index=self.frame_index,
+            bbox=bbox,
+            confidence=confidence,
+        )
 
     def _update_ball(self, bbox: BBox, confidence: float) -> None:
         if self.ball is None:

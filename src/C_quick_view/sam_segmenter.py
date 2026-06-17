@@ -4,11 +4,7 @@ from pathlib import Path
 from typing import Any, Literal
 
 import cv2
-import torch
-from huggingface_hub import login
-from peft import PeftModel
 from PIL import Image
-from transformers import Sam3Model, Sam3Processor
 
 from src.shared.paths import DORA_DIR, LOHA_DIR
 
@@ -26,13 +22,27 @@ class SAMSegmenter:
         self.mode = mode
         self.confidence_threshold = confidence_threshold
         self.adapter_path = LOHA_DIR if mode == "LoHa" else DORA_DIR
-        self.device = "cpu"
+        self.device = self._select_device()
 
         self._authenticate(api_path)
         self._load_model()
 
     @staticmethod
+    def _select_device() -> str:
+        import torch
+
+        if torch.backends.mps.is_available():
+            return "mps"
+
+        if torch.cuda.is_available():
+            return "cuda"
+
+        return "cpu"
+
+    @staticmethod
     def _authenticate(api_path: str | Path | None) -> None:
+        from huggingface_hub import login
+
         token = os.getenv("HF_TOKEN")
 
         if not token and api_path:
@@ -43,6 +53,10 @@ class SAMSegmenter:
             login(token=token)
 
     def _load_model(self) -> None:
+        import torch
+        from peft import PeftModel
+        from transformers import Sam3Model, Sam3Processor
+
         if not self.adapter_path.exists():
             raise FileNotFoundError(
                 f"No se encontro el adaptador: {self.adapter_path}"
@@ -51,9 +65,7 @@ class SAMSegmenter:
         print(f"Cargando SAM3 con adaptador {self.mode}...")
         print("La primera carga puede tardar varios minutos.")
 
-        self.processor = Sam3Processor.from_pretrained(
-            str(self.adapter_path)
-        )
+        self.processor = Sam3Processor.from_pretrained(str(self.adapter_path))
 
         base_model = Sam3Model.from_pretrained(
             "facebook/sam3",
@@ -69,13 +81,15 @@ class SAMSegmenter:
         self.model.to(self.device)
         self.model.eval()
 
-        print(f"SAM3 + {self.mode} cargado correctamente en CPU.")
+        print(f"SAM3 + {self.mode} cargado correctamente en {self.device}.")
+
 
     def detect(
         self,
         frame,
         prompt: str,
     ) -> list[dict[str, Any]]:
+        import torch
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         image = Image.fromarray(frame_rgb)
 

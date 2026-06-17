@@ -2,7 +2,7 @@ from pathlib import Path
 from typing import Any
 
 
-class SAMSegmenter:
+class SAMSegmenter_no:
     def __init__(
         self,
         model_path: str | Path | None = None,

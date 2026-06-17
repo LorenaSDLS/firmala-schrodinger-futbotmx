@@ -10,3 +10,13 @@ runs/
 Analizador de video/API_sam3.json
 
 yolov8n.pt
+
+venv_clean/
+venv_broken_torch/
+outputs/
+inputs/
+runs/
+.DS_Store
+__pycache__/
+*.pyc
+Analizador de video/API_sam3.json

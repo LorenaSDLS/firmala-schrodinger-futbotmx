@@ -22,6 +22,13 @@ class EventDetector:
         self.previous_ball_owner: str | None = None
         self.previous_ball_out = False
         self.inactive_robots_reported: set[str] = set()
+        self.ball_missing_reported = False
+
+        self.last_event_frame_by_key: dict[str, int] = {}
+        self.collision_cooldown_frames = 30
+        self.possession_stability_frames = 5
+        self.candidate_ball_owner: str | None = None
+        self.candidate_ball_owner_frames = 0
 
     def process_frame_record(self, frame_record: dict[str, Any]) -> None:
         self.game_state.update_from_frame_record(frame_record)
@@ -30,13 +37,27 @@ class EventDetector:
         self._detect_ball_out_of_field()
         self._detect_robot_inactive()
         self._detect_robot_collision()
+        self._detect_ball_missing()
 
     def _add_event(
         self,
         event_type: str,
         description: str,
         data: dict[str, Any] | None = None,
+        event_key: str | None = None,
+        cooldown_frames: int = 0,
     ) -> None:
+        key = event_key or event_type
+        last_frame = self.last_event_frame_by_key.get(key)
+
+        if (
+            last_frame is not None
+            and self.game_state.frame_index - last_frame < cooldown_frames
+        ):
+            return
+
+        self.last_event_frame_by_key[key] = self.game_state.frame_index
+
         self.events.append(
             MatchEvent(
                 frame_index=self.game_state.frame_index,
@@ -46,6 +67,7 @@ class EventDetector:
                 data=data or {},
             )
         )
+    
 
     def _detect_possession_change(self) -> None:
         ball = self.game_state.ball
@@ -55,16 +77,31 @@ class EventDetector:
 
         current_owner = ball.owner_robot_id
 
+        if current_owner is None:
+            self.candidate_ball_owner = None
+            self.candidate_ball_owner_frames = 0
+            return
+
+        if current_owner == self.candidate_ball_owner:
+            self.candidate_ball_owner_frames += 1
+        else:
+            self.candidate_ball_owner = current_owner
+            self.candidate_ball_owner_frames = 1
+
+        if self.candidate_ball_owner_frames < self.possession_stability_frames:
+            return
+
         if current_owner != self.previous_ball_owner:
-            if current_owner is not None:
-                self._add_event(
-                    event_type="possession_change",
-                    description=f"{current_owner} obtiene posesion de la pelota.",
-                    data={
-                        "robot_id": current_owner,
-                        "previous_owner": self.previous_ball_owner,
-                    },
-                )
+            self._add_event(
+                event_type="possession_change",
+                description=f"{current_owner} obtiene posesion de la pelota.",
+                data={
+                    "robot_id": current_owner,
+                    "previous_owner": self.previous_ball_owner,
+                },
+                event_key="possession_change",
+                cooldown_frames=15,
+            )
 
             self.previous_ball_owner = current_owner
 
@@ -82,7 +119,9 @@ class EventDetector:
                 event_type="ball_out_of_field",
                 description="La pelota salio del area detectada de la cancha.",
                 data={
+                    "object_id": "ball",
                     "ball_bbox": ball.bbox.to_xyxy(),
+                    "last_known_bbox": ball.bbox.to_xyxy(),
                 },
             )
 
@@ -107,8 +146,37 @@ class EventDetector:
                 data={
                     "robot_id": robot_id,
                     "frames_missing": robot.frames_missing,
-                },
+                    "last_known_bbox": robot.bbox.to_xyxy(),
+                    },
             )
+
+    def _detect_ball_missing(self) -> None:
+        ball = self.game_state.ball
+
+        if ball is None:
+            return
+
+        if ball.visible:
+            self.ball_missing_reported = False
+            return
+
+        if self.ball_missing_reported:
+            return
+
+        self.ball_missing_reported = True
+
+        self._add_event(
+            event_type="ball_missing_candidate",
+            description=(
+                "La pelota desaparecio varios frames. "
+                "Puede ser oclusion o intervencion del arbitro."
+            ),
+            data={
+                "object_id": "ball",
+                "frames_missing": ball.frames_missing,
+                "last_known_bbox": ball.bbox.to_xyxy(),
+            },
+    )
 
     def _detect_robot_collision(self) -> None:
         robots = [
@@ -119,18 +187,25 @@ class EventDetector:
 
         for index, robot_a in enumerate(robots):
             for robot_b in robots[index + 1:]:
-                if robot_a.bbox.expanded(10).intersects(robot_b.bbox):
-                    self._add_event(
-                        event_type="robot_collision_candidate",
-                        description=(
-                            f"{robot_a.robot_id} y {robot_b.robot_id} "
-                            "estan demasiado cerca o intersectando."
-                        ),
-                        data={
-                            "robot_a": robot_a.robot_id,
-                            "robot_b": robot_b.robot_id,
-                        },
-                    )
+                if not robot_a.bbox.expanded(10).intersects(robot_b.bbox):
+                    continue
+
+                pair = sorted([robot_a.robot_id, robot_b.robot_id])
+                event_key = f"collision:{pair[0]}:{pair[1]}"
+
+                self._add_event(
+                    event_type="robot_collision_candidate",
+                    description=(
+                        f"{pair[0]} y {pair[1]} "
+                        "estan demasiado cerca o intersectando."
+                    ),
+                    data={
+                        "robot_a": pair[0],
+                        "robot_b": pair[1],
+                    },
+                    event_key=event_key,
+                    cooldown_frames=self.collision_cooldown_frames,
+                )
 
 
 def read_detection_records(detections_path: str | Path) -> list[dict[str, Any]]:

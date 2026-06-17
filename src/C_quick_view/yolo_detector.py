@@ -2,7 +2,6 @@ from pathlib import Path
 from typing import Any
 
 import cv2
-from ultralytics import YOLO
 
 from src.shared.paths import YOLO_WEIGHTS_PATH
 
@@ -12,15 +11,21 @@ class YOLODetector:
         self,
         weights_path: str | Path = YOLO_WEIGHTS_PATH,
         confidence_threshold: float = 0.25,
+        image_size: int = 640,
     ) -> None:
         self.weights_path = Path(weights_path)
         self.confidence_threshold = confidence_threshold
+        self.image_size = image_size
 
         if not self.weights_path.exists():
             raise FileNotFoundError(
                 f"No se encontro el modelo YOLO en: {self.weights_path}"
             )
 
+        print("Importando Ultralytics YOLO...")
+        from ultralytics import YOLO
+
+        print(f"Cargando YOLO desde: {self.weights_path}")
         self.model = YOLO(str(self.weights_path))
         self.class_names = self.model.names
 
@@ -28,6 +33,7 @@ class YOLODetector:
         results = self.model.predict(
             source=frame,
             conf=self.confidence_threshold,
+            imgsz=self.image_size,
             verbose=False,
         )
 

@@ -26,7 +26,7 @@
 
 > Antes de entregar, reemplacen únicamente los dos enlaces marcados.
 
-- **Video oficial de demostración, máximo 2 minutos:** [Ver video]((https://drive.google.com/file/d/1VRmai3D3yio9jtnJlJfg9aP5-IbjQOgY/view?usp=sharing))
+- **Video oficial de demostración, máximo 2 minutos:** [Ver video]([(https://drive.google.com/file/d/1VRmai3D3yio9jtnJlJfg9aP5-IbjQOgY/view?usp=sharing)])
 - **Reel público de Instagram, mínimo 30 segundos:** [Ver Reel](REEMPLAZAR_CON_ENLACE_REEL)
 - **Video procesado de ejemplo:** [Abrir MP4](docs/video_procesado.mp4)
 - **Mesa Replay de ejemplo:** [Abrir MP4](docs/mesa_replay.mp4)

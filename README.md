@@ -31,7 +31,6 @@
 - **Video procesado de ejemplo:** [Abrir MP4](docs/video_procesado.mp4)
 - **Mesa Replay de ejemplo:** [Abrir MP4](docs/mesa_replay.mp4)
 - **Reporte PDF:** [Abrir reporte](docs/reporte_final.pdf)
-- **Reporte HTML:** [Abrir reporte interactivo](docs/reporte_final.html)
 
 ---
 

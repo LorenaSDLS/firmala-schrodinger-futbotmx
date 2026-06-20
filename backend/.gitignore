@@ -1,0 +1,71 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+venv/
+.venv/
+venv_clean/
+env/
+.env
+.env.*
+pip-wheel-metadata/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Outputs / generated files
+outputs/
+runs/
+logs/
+*.log
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.zip
+
+# Large ML files
+*.pt
+*.pth
+*.onnx
+*.engine
+*.safetensors
+*.ckpt
+
+# macOS
+.DS_Store
+
+# VS Code
+.vscode/
+
+# Unity
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+[Mm]emoryCaptures/
+Recordings/
+
+# Unity generated
+*.csproj
+*.sln
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# Unity crash/debug
+sysinfo.txt

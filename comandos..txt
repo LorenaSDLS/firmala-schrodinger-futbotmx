@@ -1,0 +1,3 @@
+Para que sea lo mas rapido posible usa
+
+python -m src.main_supr "inputs/video-1096_singular_display.mov" --sam-mode none --performance-profile cpu --yolo-imgsz 416 --field-calibration hologram --no-field-debug --no-tracking-debug --replay-frame-stride 3 --pdf --narration --narration-mode duo --narration-engine edge --narration-script-engine template --narration-max-events 6

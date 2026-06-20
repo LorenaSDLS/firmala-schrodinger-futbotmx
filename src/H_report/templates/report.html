@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Reporte FutBotMX</title>
+<style>
+@page { size: A4; margin: 12mm; }
+* { box-sizing: border-box; }
+body { margin:0; font-family: Arial, sans-serif; color:#171827; background:#fff; }
+.header { display:flex; justify-content:space-between; align-items:center; border-bottom:3px solid #6c2ca7; padding-bottom:10px; }
+.logo { width:105px; height:70px; object-fit:contain; }
+h1 { margin:0; font-size:27px; letter-spacing:1px; }
+.subtitle { color:#696a78; font-size:12px; }
+.metrics { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin:14px 0; }
+.metric { border:1px solid #ded8e8; border-radius:9px; padding:10px; text-align:center; }
+.metric strong { display:block; font-size:24px; color:#57208f; }
+.grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.card { border:1px solid #ded8e8; border-radius:9px; padding:11px; margin-bottom:10px; break-inside:avoid; }
+h2 { font-size:15px; margin:0 0 9px; text-transform:uppercase; letter-spacing:.5px; color:#57208f; }
+.event { display:grid; grid-template-columns:48px 1fr 52px; gap:8px; border-bottom:1px solid #eeeaf2; padding:7px 0; font-size:11px; }
+.event:last-child { border-bottom:none; }
+.event .time { font-weight:bold; color:#5f6170; }
+.event .confidence { text-align:right; font-weight:bold; }
+.summary-row { display:flex; justify-content:space-between; border-bottom:1px solid #efebf3; padding:5px 0; font-size:11px; }
+.summary-row:last-child { border-bottom:none; }
+.chart { width:100%; height:215px; object-fit:contain; }
+.robot-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:7px; }
+.robot { background:#f7f5fa; border-radius:7px; padding:8px; font-size:10px; }
+.note { font-size:9px; color:#70717c; margin-top:8px; }
+.badge { display:inline-block; padding:2px 6px; border-radius:20px; background:#eee7f5; color:#57208f; font-size:9px; font-weight:bold; }
+</style>
+</head>
+<body>
+<div class="header">
+  <div><h1>REPORTE DE PARTIDO</h1><div class="subtitle">FutBotMX - análisis automático</div></div>
+  <img class="logo" src="{{ logo_uri }}">
+</div>
+<div class="metrics">
+ <div class="metric"><strong>{{ data.duration }}</strong><span>Duración</span></div>
+ <div class="metric"><strong>{{ data.total_events }}</strong><span>Eventos totales</span></div>
+ <div class="metric"><strong>{{ data.quality.robot_count }}</strong><span>Robots identificados</span></div>
+ <div class="metric"><strong>{{ data.quality.ball_visibility_percent }}%</strong><span>Balón visible</span></div>
+</div>
+<div class="card">
+<h2>Eventos destacados</h2>
+{% if data.featured_events %}
+{% for event in data.featured_events %}
+<div class="event"><div class="time">{{ event.time }}</div><div><b>{{ event.description }}</b><br><span class="badge">{{ event.importance }}</span></div><div class="confidence">{{ event.confidence }}%</div></div>
+{% endfor %}
+{% else %}<div class="note">No hubo eventos con suficiente relevancia para destacar.</div>{% endif %}
+</div>
+<div class="grid">
+ <div class="card"><h2>Resumen de eventos</h2>{% for row in data.event_summary %}<div class="summary-row"><span>{{ row.name }}</span><b>{{ row.count }}</b></div>{% endfor %}</div>
+ <div class="card"><h2>Posesión registrada</h2>{% for row in data.possession %}<div class="summary-row"><span>{{ row.name }}</span><b>{{ row.percentage }}% ({{ row.seconds }} s)</b></div>{% endfor %}{% if not data.possession %}<div class="note">No hubo posesión suficientemente estable.</div>{% endif %}</div>
+</div>
+<div class="grid">
+ <div class="card"><h2>Trayectorias</h2><img class="chart" src="{{ paths_uri }}"></div>
+ <div class="card"><h2>Mapa de calor del balón</h2><img class="chart" src="{{ heatmap_uri }}"></div>
+</div>
+<div class="card"><h2>Actividad de robots</h2><div class="robot-grid">{% for robot in data.robots %}<div class="robot"><b>{{ robot.name }}</b><br>Equipo: {{ robot.team }}<br>Visible: {{ robot.visibility_percent }}%<br>Frames estimados: {{ robot.predicted_frames }}</div>{% endfor %}</div></div>
+<div class="card"><h2>Calidad del análisis</h2><div class="summary-row"><span>Frames analizados</span><b>{{ data.quality.total_frames }}</b></div><div class="summary-row"><span>Frames del balón estimados</span><b>{{ data.quality.ball_predicted_frames }}</b></div><div class="note">El JSON conserva todos los eventos. Este reporte muestra solamente una selección editorial para evitar saturar la página. Los eventos candidatos pueden incluir incertidumbre.</div></div>
+</body></html>

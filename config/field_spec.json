@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "name": "FutBotMX competition field",
+  "surface_length_cm": 243.0,
+  "surface_width_cm": 182.0,
+  "line_width_cm": 2.0,
+  "center_line_x_cm": 121.5,
+  "center_circle_diameter_cm": 0.0,
+  "penalty_area_depth_cm": 25.0,
+  "penalty_area_width_cm": 80.0,
+  "penalty_area_shape": "semiellipse",
+  "goal_width_cm": 60.0,
+  "goal_depth_cm": 10.0,
+  "goal_height_cm": 10.0,
+  "wall_min_height_cm": 22.0,
+  "ball_diameter_cm": 4.2,
+  "robot_max_width_cm": 18.0,
+  "robot_max_length_cm": 18.0,
+  "goal_colors": ["yellow", "blue"]
+}

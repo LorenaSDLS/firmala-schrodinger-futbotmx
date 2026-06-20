@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="futbot-report-version" content="11.5.2" />
+  <title>Reporte de Partido - Fírmala, Schrödinger</title>
+
+  <style>
+    :root {
+      --magenta: #d21aa5;
+      --magenta-dark: #8d167f;
+      --blue: #0986df;
+      --blue-dark: #045491;
+      --ink: #171929;
+      --muted: #6e7080;
+      --line: #ded6e6;
+      --soft: #f8f6fb;
+      --yellow: #f6c415;
+      --field: #111827;
+      --green: #21d07a;
+      --page-width: 1048px;
+      --page-height: 1595px;
+    }
+
+    * { box-sizing: border-box; }
+
+    @page { size: 1048px 1595px; margin: 0; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: var(--page-width);
+      background: #e9e9ee;
+      font-family: "Arial Narrow", "Roboto Condensed", "Segoe UI", Arial, sans-serif;
+      color: var(--ink);
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    .report-page {
+      width: var(--page-width);
+      height: var(--page-height);
+      min-height: var(--page-height);
+      max-height: var(--page-height);
+      margin: 0 auto;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(210, 26, 165, 0.05), transparent 28%),
+        radial-gradient(circle at 90% 7%, rgba(9, 134, 223, 0.06), transparent 25%),
+        #ffffff;
+      border: 2px solid #c89ada;
+      border-radius: 8px;
+      padding: 16px 22px 14px;
+      box-shadow: 0 12px 40px rgba(31, 22, 41, 0.18);
+      overflow: hidden;
+      break-after: page;
+      page-break-after: always;
+      position: relative;
+    }
+    .report-page:last-child { break-after: auto; page-break-after: auto; }
+
+    /* UTILIDADES GENERALES */
+    .box {
+      border: 1.5px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 12px 14px;
+    }
+    .section-title { margin: 0 0 12px; font-size: 17px; line-height: 1; font-weight: 900; letter-spacing: 0.6px; text-transform: uppercase; }
+    .magenta-text { color: var(--magenta); }
+    .blue-text { color: var(--blue); }
+    .muted { color: var(--muted); }
+    .small { font-size: 11px; }
+    .bold { font-weight: 900; }
+
+    .placeholder-img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .robot-render { width: 100%; height: 100%; object-fit: contain; padding: 8px; }
+    .image-slot { position: relative; overflow: hidden; background: linear-gradient(135deg, rgba(255,255,255,.08), rgba(255,255,255,0)), #0a1020; border-radius: 5px; }
+    .image-slot::before { content: attr(data-label); position: absolute; inset: 0; display: grid; place-items: center; color: rgba(255, 255, 255, 0.45); font-size: 12px; letter-spacing: 0.5px; text-transform: uppercase; z-index: 0; }
+    .image-slot img { position: relative; z-index: 1; }
+
+    /* HEADER */
+    .header { display: grid; grid-template-columns: auto 1fr 270px; align-items: center; gap: 18px; height: 130px; border-bottom: 1px solid rgba(222, 214, 230, 0.85); }
+    .brand { position: relative; display: flex; align-items: center; padding-left: 230px; }
+    .brand-logo { position: absolute; left: -10px; top: -130px; width: 250px; height: 250px; object-fit: contain; z-index: 10; }
+    .title-block { text-align: center; padding-top: 14px; }
+    .main-title { margin: 0; font-size: 41px; line-height: 1; letter-spacing: 3px; font-weight: 950; text-transform: uppercase; }
+    .league-title { margin: 0px; color: #4e2680; font-size: 22px; font-weight: 800; }
+    .meta-table { width: 100%; border-collapse: collapse; margin-top: 2px; font-size: 13px; font-weight: 800; }
+    .meta-table td { padding: 5px 8px; border-left: 1px solid #e2dce8; }
+    .meta-table td:first-child { width: 102px; color: var(--ink); text-transform: uppercase; }
+    .meta-table td:last-child { color: #444557; font-weight: 700; }
+
+    /* SCORE HERO */
+    .score-hero { display: grid; grid-template-columns: 1fr 250px 1fr; gap: 16px; align-items: stretch; height: 144px; margin-top: 14px; margin-bottom: 14px; }
+    .team-side { display: grid; grid-template-columns: 175px 1fr; gap: 16px; align-items: center; }
+    .team-side.right { grid-template-columns: 1fr 175px; text-align: right; }
+    .team-render { height: 132px; border-radius: 6px; border: 1px solid #2f1740; }
+    .team-name { font-size: 20px; font-weight: 950; text-transform: uppercase; letter-spacing: 0.7px; margin-bottom: 14px; }
+    .strategy { font-size: 12px; color: var(--muted); font-weight: 800; line-height: 1.45; }
+    .strategy b { color: var(--ink); }
+    .score-center { text-align: center; display: grid; grid-template-rows: auto 1fr auto; align-items: center; }
+    .final-label { font-size: 15px; font-weight: 950; text-transform: uppercase; margin-top: 2px; }
+    .score-numbers { display: flex; align-items: center; justify-content: center; gap: 26px; line-height: 1; }
+    .score-numbers .num { font-size: 70px; font-weight: 900; }
+    .score-numbers .dash { font-size: 34px; font-weight: 900; color: #111; margin-top: -4px; }
+    .winner-label { font-size: 12px; font-weight: 950; text-transform: uppercase; margin-bottom: 2px; }
+    .winner-name { margin-top: 7px; font-size: 15px; font-weight: 950; color: var(--magenta); text-transform: uppercase; letter-spacing: 0.8px; }
+
+    /* MAIN GRID & STATS */
+    .two-col { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 12px; margin-bottom: 12px; }
+    .stats-box { min-height: auto; margin-bottom: 12px; padding: 12px 18px 14px; }
+    .stats-table {
+      display: block;
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 13px;
+      font-weight: 850;
+    }
+    .stats-table tbody { display: block; width: 100%; }
+    .stats-table tr {
+      display: grid;
+      grid-template-columns: 34px 200px 82px 310px 82px;
+      column-gap: 8px;
+      justify-content: center;
+      align-items: center;
+      min-height: 28px;
+    }
+    .stats-table td { display: block; width: auto; padding: 4px 0; vertical-align: middle; }
+    .stats-table .icon { color: #81808c; font-size: 17px; text-align: center; }
+    .stats-table .label { text-transform: uppercase; letter-spacing: 0.2px; }
+    .stats-table .value-magenta,
+    .stats-table .value-blue {
+      width: auto;
+      white-space: nowrap;
+      font-size: 16px;
+      font-weight: 950;
+    }
+    .stats-table .value-magenta { color: var(--magenta); text-align: right; padding-right: 4px; }
+    .stats-table .value-blue { color: var(--blue); text-align: left; padding-left: 4px; }
+    .stats-table td:nth-child(4) { padding: 0 14px; }
+    .compare-bar {
+      position: relative;
+      display: flex;
+      width: 100%;
+      height: 7px;
+      border-radius: 999px;
+      overflow: hidden;
+      background: #e5e2e8;
+    }
+    .compare-fill { display: block; flex: 0 0 auto; height: 100%; }
+    .compare-fill.magenta-fill { background: var(--magenta); }
+    .compare-fill.blue-fill { background: var(--blue); }
+    .compare-bar::after {
+      content: "";
+      position: absolute;
+      left: calc(50% - 1px);
+      top: -2px;
+      width: 2px;
+      height: 11px;
+      background: rgba(255,255,255,.9);
+    }
+
+    /* EVENTS - always begin on page 2 and continue on additional pages */
+    .events-report-page { display: flex; flex-direction: column; }
+    .events-report-page .events-page-header { height: 126px; flex: 0 0 126px; }
+    .events-report-page .events-box { flex: 1 1 auto; min-height: 0; margin: 14px 0 12px; padding: 16px 18px; overflow: hidden; }
+    .events-page-heading { display: grid; grid-template-columns: 1fr auto; gap: 18px; align-items: end; margin-bottom: 12px; padding-bottom: 10px; border-bottom: 2px solid rgba(210,26,165,.18); }
+    .events-page-heading .section-title { margin: 0; font-size: 24px; }
+    .events-page-meta { color: var(--muted); font-size: 11px; font-weight: 850; text-align: right; text-transform: uppercase; }
+    .event-list { position: relative; padding-left: 31px; margin-top: 4px; }
+    .event-list::before { content: ""; position: absolute; left: 20px; top: 3px; bottom: 10px; width: 2px; background: linear-gradient(var(--magenta), var(--blue)); opacity: 0.45; }
+    .event-row { position: relative; display: grid; grid-template-columns: 58px 1fr 70px; gap: 10px; align-items: center; min-height: 62px; padding: 6px 0; border-bottom: 1px solid #ebe6ef; font-size: 13px; break-inside: avoid; page-break-inside: avoid; }
+    .event-row:last-child { border-bottom: none; }
+    .event-icon { width: 30px; height: 30px; object-fit: contain; display: block; }
+    .event-dot { position: absolute; left: -35px; top: 10px; width: 22px; height: 22px; display: flex; border: none; background: transparent; align-items: center; justify-content: center; }
+    .event-time { color: #5d5d69; font-weight: 850; }
+    .event-main { line-height: 1.18; min-width: 0; }
+    .event-title { font-weight: 950; text-transform: uppercase; letter-spacing: .2px; }
+    .event-sub { font-weight: 800; color: #444555; overflow-wrap: anywhere; }
+    .event-score { text-align: right; font-weight: 950; font-size: 19px; }
+
+    /* MAPS & ZONES */
+    .map-box { min-height: 270px; }
+    .legend { display: flex; gap: 24px; align-items: center; margin: -6px 0 10px; font-size: 11px; font-weight: 900; text-transform: uppercase; }
+    .legend span::before { content: ""; display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; background: currentColor; }
+    .field-map { height: 185px; width: 90%; margin: 0 auto; border: 2px solid #25394d; background: #080c1a; }
+    .zones-box { min-height: 270px; }
+    .zone-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; align-items: start; padding: 0 2px; }
+    .zone-title { text-align: center; text-transform: uppercase; font-size: 12px; font-weight: 950; margin-bottom: 8px; }
+    .zone-img { height: 151px; border-radius: 2px; border: 1px solid #1a2340; background: #0a1020; }
+    .heat-scale { display: grid; grid-template-columns: 1fr 300px 1fr; gap: 12px; align-items: center; margin: 12px auto 0; width: 76%; font-size: 11px; font-weight: 950; text-transform: uppercase; color: #4e4f5b; }
+    .gradient-bar { height: 8px; background: linear-gradient(90deg, #3b126c, #0673d2, #12cf71, #ffe000); }
+
+    /* ROBOTS */
+    .robots-box { margin-bottom: 12px; }
+    .robot-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 9px; }
+    .robot-card { min-height: 205px; border: 1.5px solid var(--line); border-radius: 6px; padding: 11px 10px; display: grid; grid-template-columns: 98px 1fr; grid-template-rows: auto 78px 1fr; column-gap: 10px; background: #fff; overflow: hidden; }
+    .robot-name { grid-column: 1 / -1; font-size: 16px; font-weight: 950; text-transform: uppercase; margin-bottom: 2px; }
+    .robot-img { grid-row: 2; height: 76px; align-self: center; background: transparent; border-radius: 5px; }
+    .robot-mini-stats { font-size: 7.6px; font-weight: 850; text-transform: uppercase; line-height: 1.55; align-self: center; }
+    .mini-row { display: grid; grid-template-columns: 1fr auto; gap: 5px; border-top: 1px solid #e8e3ed; padding-top: 2px; }
+    .efficiency { grid-column: 1 / -1; border-top: 1px solid #eee8f3; display: flex; align-items: center; gap: 16px; padding-top: 8px; margin-top: 6px; }
+    .circle { width: 58px; height: 58px; border-radius: 50%; border: 4px solid currentColor; display: grid; place-items: center; font-size: 16px; font-weight: 950; }
+    .eff-label { font-size: 13px; font-weight: 950; text-transform: uppercase; color: #4a4b58; letter-spacing: 0.3px; }
+    .robot-status { grid-column: 1 / -1; margin-top: 5px; padding: 4px 7px; border-radius: 999px; background: #f0edf4; color: #4e4f5b; text-align: center; font-size: 8px; font-weight: 950; letter-spacing: .45px; text-transform: uppercase; }
+    .robot-status.stopped { background: #fff1f1; color: #b52538; }
+    .robot-status.moving { background: #eefaf4; color: #16794c; }
+    .quality-note { font-size: 8px; color: #6c6d78; font-weight: 800; }
+
+    /* BOTTOM & CHARTS */
+    .bottom-grid { display: grid; grid-template-columns: 1fr 0.96fr; gap: 12px; margin-bottom: 12px; }
+    .chart-box { min-height: 235px; }
+    .chart-legend { display: flex; justify-content: flex-end; gap: 20px; margin-top: -20px; margin-bottom: 8px; font-size: 11px; font-weight: 900; text-transform: uppercase; }
+    .legend-line { display: inline-block; width: 34px; height: 3px; margin-right: 7px; vertical-align: 2px; background: currentColor; }
+    .chart-area { height: 168px; }
+    .summary-stack { display: grid; grid-template-rows: 1fr auto; gap: 10px; }
+    .summary-box { min-height: 134px; display: grid; grid-template-columns: 1fr 88px; gap: 12px; align-items: center; }
+    .summary-text { font-size: 15px; font-weight: 800; line-height: 1.45; }
+    .trophy { width: 62px; height: 62px; justify-self: center; }
+    .observations-box { min-height: 92px; font-size: 12px; font-weight: 800; line-height: 1.45; }
+
+    /* FOOTER */
+    .footer { display: grid; grid-template-columns: 330px 1fr 130px 78px; gap: 12px; align-items: end; height: 88px; border-top: 1px solid var(--line); padding-top: 12px; font-size: 12px; font-weight: 850; }
+    .footer-brand { display: grid; grid-template-columns: 42px 1fr; align-items: center; gap: 12px; }
+    .footer-logo { width: 50px; height: 50px; object-fit: contain; }
+    .footer-title { font-size: 15px; font-weight: 950; text-transform: uppercase; letter-spacing: .4px; }
+    .footer-label { font-size: 11px; text-transform: uppercase; font-weight: 950; margin-bottom: 7px; }
+    .page-num { font-size: 24px; font-weight: 950; }
+    .qr { width: 70px; height: 70px; border: 1px solid #1d1d1d; object-fit: cover; justify-self: end; }
+    .event-page-footer { margin-top: auto; }
+    .event-page-kicker { color: #4e2680; font-size: 14px; font-weight: 900; text-transform: uppercase; letter-spacing: .8px; }
+
+    /* Page 1 keeps the complete visual dashboard and its footer on one page. */
+    .summary-report-page .header { height: 112px; }
+    .summary-report-page .brand-logo { top: -122px; width: 235px; height: 235px; }
+    .summary-report-page .main-title { font-size: 38px; }
+    .summary-report-page .league-title { font-size: 19px; }
+    .summary-report-page .score-hero { height: 124px; margin-top: 10px; margin-bottom: 10px; }
+    .summary-report-page .team-render { height: 116px; }
+    .summary-report-page .team-name { margin-bottom: 8px; }
+    .summary-report-page .score-numbers .num { font-size: 62px; }
+    .summary-report-page .stats-table td { padding: 3px 0; }
+    .summary-report-page .map-box, .summary-report-page .zones-box { min-height: 238px; }
+    .summary-report-page .field-map { height: 156px; }
+    .summary-report-page .zone-img { height: 124px; }
+    .summary-report-page .heat-scale { margin-top: 7px; }
+    .summary-report-page .robots-box { margin-bottom: 8px; padding-top: 10px; padding-bottom: 10px; }
+    .summary-report-page .robot-card { min-height: 176px; padding-top: 8px; padding-bottom: 7px; grid-template-rows: auto 66px 1fr; }
+    .summary-report-page .robot-img { height: 64px; }
+    .summary-report-page .circle { width: 50px; height: 50px; font-size: 14px; }
+    .summary-report-page .efficiency { padding-top: 5px; margin-top: 4px; }
+    .summary-report-page .bottom-grid { margin-bottom: 7px; }
+    .summary-report-page .chart-box { min-height: 196px; }
+    .summary-report-page .chart-area { height: 132px; }
+    .summary-report-page .summary-box { min-height: 104px; }
+    .summary-report-page .summary-text { font-size: 13px; line-height: 1.35; }
+    .summary-report-page .observations-box { min-height: 78px; font-size: 10px; line-height: 1.34; }
+    .summary-report-page .footer { height: 68px; padding-top: 7px; }
+    .summary-report-page .footer-logo { width: 42px; height: 42px; }
+    .summary-report-page .qr { width: 54px; height: 54px; }
+
+    /*
+       Vista en pantalla: centra cada hoja aunque la ventana sea más ancha.
+       Vista de impresión: elimina efectos caros para que Chrome renderice el PDF
+       con fluidez, sin alterar mapas, gráficas, colores ni texto seleccionable.
+    */
+    @media screen {
+      html, body {
+        width: 100%;
+        min-width: var(--page-width);
+      }
+      body { padding: 18px 0; }
+      .report-page { margin: 0 auto 18px; }
+      .report-page:last-child { margin-bottom: 0; }
+    }
+
+    @media print {
+      html, body {
+        width: var(--page-width);
+        min-width: var(--page-width);
+        background: #ffffff !important;
+      }
+      body { padding: 0; }
+      .report-page {
+        margin: 0 !important;
+        background: #ffffff !important;
+        box-shadow: none !important;
+        border-radius: 0 !important;
+      }
+      .box { background: #ffffff !important; }
+      .chart-area img { filter: none !important; }
+      .image-slot { background: #0a1020 !important; }
+      .event-list::before { background: #9b72b0 !important; }
+
+      /* Evita que Chromium corte el pie de la primera página. */
+      .summary-report-page .footer {
+        position: absolute;
+        left: 22px;
+        right: 22px;
+        bottom: 14px;
+        width: auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="report-page summary-report-page" data-report-version="11.5.2">
+
+    <header class="header">
+      <section class="brand">
+        <img class="brand-logo" src="assets/logo.png" alt="Logo Robocat" />
+      </section>
+
+      <section class="title-block">
+        <h1 class="main-title">REPORTE DE PARTIDO</h1>
+        <p class="league-title">Sistemas de Visión</p>
+      </section>
+
+      <table class="meta-table" aria-label="Datos del partido">
+        <tr><td>Fecha:</td><td>{{ fecha }}</td></tr>
+        <tr><td>Hora:</td><td>{{ hora }}</td></tr>
+        <tr><td>Duración:</td><td>{{ duracion }}</td></tr>
+        <tr><td>ID Partido:</td><td>{{ id_partido }}</td></tr>
+      </table>
+    </header>
+
+    <section class="score-hero">
+      <div class="team-side">
+        <div class="image-slot team-render" data-label="Robot magenta">
+          <img class="placeholder-img" src="assets/aliado.png" alt="Robot Equipo Magenta" />
+        </div>
+        <div>
+          <div class="team-name magenta-text">Equipo Magenta</div>
+          <div class="strategy"><b>Distancia total:</b> {{ equipos.aliado.distancia }}<br><b>Posesión confirmada:</b> {{ equipos.aliado.posesion }}<br><b>Actividad:</b> {{ equipos.aliado.actividad }}</div>
+        </div>
+      </div>
+
+      <div class="score-center">
+        <div class="final-label">Resultado Final</div>
+        <div class="score-numbers">
+          <span class="num magenta-text">{{ marcador.aliado }}</span>
+          <span class="dash">-</span>
+          <span class="num blue-text">{{ marcador.rival }}</span>
+        </div>
+        <div>
+          <div class="winner-label">Ganador</div>
+          <div class="winner-name">
+            {% if marcador.aliado > marcador.rival %}
+              Equipo Magenta
+            {% elif marcador.rival > marcador.aliado %}
+              Equipo Azul
+            {% else %}
+              Empate
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+      <div class="team-side right">
+        <div>
+          <div class="team-name blue-text">Equipo Azul</div>
+          <div class="strategy"><b>Distancia total:</b> {{ equipos.rival.distancia }}<br><b>Posesión confirmada:</b> {{ equipos.rival.posesion }}<br><b>Actividad:</b> {{ equipos.rival.actividad }}</div>
+        </div>
+        <div class="image-slot team-render" data-label="Robot azul">
+          <img class="placeholder-img" src="assets/enemigo.png" alt="Robot Equipo Azul" />
+        </div>
+      </div>
+    </section>
+
+    <section class="box stats-box">
+        <h2 class="section-title">Estadísticas Generales</h2>
+
+        <table class="stats-table">
+          {% for stat in estadisticas %}
+          <tr>
+            <td class="icon">{{ stat.icono }}</td>
+            <td class="label">{{ stat.nombre }}</td>
+            <td class="value-magenta">
+              {{ stat.aliado_text }}
+            </td>
+            <td>
+              <div class="compare-bar" aria-hidden="true">
+                <span class="compare-fill magenta-fill" style="width: {{ stat.bar_left_pct }}%;"></span>
+                <span class="compare-fill blue-fill" style="width: {{ 100 - stat.bar_left_pct }}%;"></span>
+              </div>
+            </td>
+            <td class="value-blue">
+              {{ stat.rival_text }}
+            </td>
+          </tr>
+          {% endfor %}
+        </table>
+      </section>
+
+    <section class="two-col">
+      <article class="box map-box">
+        <h2 class="section-title">Mapa de Movimiento</h2>
+        <div class="legend">
+          <span class="magenta-text">Magenta</span>
+          <span class="blue-text">Azul</span>
+        </div>
+        <div class="image-slot field-map" data-label="Mapa de movimiento">
+          <img class="placeholder-img" src="assets/mapa_movimiento.png" alt="Mapa de Movimiento" />
+        </div>
+      </article>
+
+      <article class="box zones-box">
+        <h2 class="section-title">Zonas de Control / Heatmap</h2>
+        <div class="zone-grid">
+          <div>
+            <div class="zone-title magenta-text">Equipo Magenta · {{ control.aliado|round|int }}%</div>
+            <div class="image-slot zone-img" data-label="Zona Magenta">
+              <img class="placeholder-img" src="assets/zona_control_magenta.png" alt="Zona de control Magenta" />
+            </div>
+          </div>
+          <div>
+            <div class="zone-title blue-text">Equipo Azul · {{ control.rival|round|int }}%</div>
+            <div class="image-slot zone-img" data-label="Zona Azul">
+              <img class="placeholder-img" src="assets/zona_control_azul.png" alt="Zona de control Azul" />
+            </div>
+          </div>
+        </div>
+        <div class="heat-scale">
+          <span>Bajo</span>
+          <div class="gradient-bar"></div>
+          <span>Alto</span>
+        </div>
+      </article>
+    </section>
+
+    <section class="box robots-box">
+      <h2 class="section-title">Rendimiento por Robot</h2>
+
+      <div class="robot-grid">
+        {% for robot in robots %}
+        <article class="robot-card">
+          <div class="robot-name {{ 'magenta-text' if robot.equipo == 'aliado' else 'blue-text' if robot.equipo == 'rival' else '' }}">
+            {{ robot.nombre }}
+          </div>
+
+          <div class="image-slot robot-img" data-label="Robot">
+            <img class="robot-render" 
+                 src="assets/{{ 'aliadosf.png' if robot.equipo == 'aliado' else 'enemigosf.png' if robot.equipo == 'rival' else 'aliado enemigo.png' }}" 
+                 alt="Robot {{ robot.nombre }}" />
+          </div>
+
+          <div class="robot-mini-stats">
+            <div class="mini-row"><span>Distancia</span><b>{{ robot.distancia }}</b></div>
+            <div class="mini-row"><span>Velocidad prom.</span><b>{{ robot.vel }}</b></div>
+            <div class="mini-row"><span>Velocidad pico</span><b>{{ robot.vel_pico }}</b></div>
+            <div class="mini-row"><span>Tiempo con balón</span><b>{{ robot.posesion }}</b></div>
+            <div class="mini-row"><span>Entradas al área</span><b>{{ robot.entradas_area }}</b></div>
+            <div class="mini-row"><span>Eventos</span><b>{{ robot.eventos }}</b></div>
+          </div>
+
+          <div class="efficiency {{ 'magenta-text' if robot.equipo == 'aliado' else 'blue-text' if robot.equipo == 'rival' else '' }}">
+            <div class="circle">{{ robot.actividad_text }}</div>
+            <div><div class="eff-label">Actividad</div><div class="quality-note">Calidad tracking: {{ robot.calidad_tracking }}%</div></div>
+          </div>
+          <div class="robot-status {{ 'stopped' if robot.estado in ['SIN MOVIMIENTO','SIN DATOS'] else 'moving' }}">{{ robot.estado }}</div>
+        </article>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section class="bottom-grid">
+      <article class="box chart-box">
+        <h2 class="section-title">Gráfica de Posesión</h2>
+        <div class="chart-legend">
+          <span class="magenta-text"><i class="legend-line"></i>Magenta</span>
+          <span class="blue-text"><i class="legend-line"></i>Azul</span>
+          <span style="color:#9093a0"><i class="legend-line"></i>Libre / sin asignar</span>
+        </div>
+        <div class="chart-area">
+  <img src="assets/grafica_posesion.png" alt="Gráfica de Posesión" style="width: 100%; height: 100%; object-fit: contain; filter: saturate(1.5) contrast(1.1);">
+</div>
+      </article>
+
+      <div class="summary-stack">
+        <article class="box summary-box">
+          <div>
+            <h2 class="section-title">Resumen del Partido</h2>
+            <p class="summary-text">{{ resumen }}</p>
+          </div>
+          <svg class="trophy" viewBox="0 0 64 64" aria-label="Trofeo">
+            <path d="M20 8h24v9c0 12-5 18-12 21-7-3-12-9-12-21V8Z" fill="none" stroke="#d21aa5" stroke-width="3"/>
+            <path d="M20 12H8v8c0 8 5 13 14 14" fill="none" stroke="#d21aa5" stroke-width="3"/>
+            <path d="M44 12h12v8c0 8-5 13-14 14" fill="none" stroke="#d21aa5" stroke-width="3"/>
+            <path d="M32 38v10M22 55h20M18 60h28" fill="none" stroke="#d21aa5" stroke-width="3" stroke-linecap="round"/>
+          </svg>
+        </article>
+
+        <article class="box observations-box">
+          <h2 class="section-title">Observaciones</h2>
+          {% for obs in observaciones %}
+            <div>- {{ obs }}</div>
+          {% endfor %}
+        </article>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <section class="footer-brand">
+        <img class="footer-logo" src="assets/logo_solo.png" alt="Logo Robocat" />
+        <div>
+          <div class="footer-label">Generado por</div>
+          <div class="footer-title">Fírmala, Schrödinger</div>
+        </div>
+      </section>
+      <section>
+        <div class="footer-label">Sistema</div>
+        <div>Lore, Yamis y Oscar Vision Analytics v11.5.2</div>
+      </section>
+      <section>
+        <div class="footer-label">Página</div>
+        <div class="page-num">1 / {{ total_page_count }}</div>
+      </section>
+      {% if qr_available %}<section><img class="qr" src="assets/qr.png" alt="QR del reporte" /></section>{% else %}<section></section>{% endif %}
+    </footer>
+
+  </main>
+
+  {% for event_page in event_pages %}
+  <main class="report-page events-report-page" data-report-version="11.5.2" data-event-page="{{ event_page.page_number }}">
+    <header class="header events-page-header">
+      <section class="brand">
+        <img class="brand-logo" src="assets/logo.png" alt="Logo Robocat" />
+      </section>
+      <section class="title-block">
+        <h1 class="main-title" style="font-size:34px">EVENTOS DEL PARTIDO</h1>
+        <p class="league-title">Registro cronológico completo</p>
+      </section>
+      <table class="meta-table" aria-label="Datos del partido">
+        <tr><td>Partido:</td><td>{{ id_partido }}</td></tr>
+        <tr><td>Duración:</td><td>{{ duracion }}</td></tr>
+        <tr><td>Eventos:</td><td>{{ event_count }}</td></tr>
+        <tr><td>Página:</td><td>{{ event_page.page_number }} / {{ total_page_count }}</td></tr>
+      </table>
+    </header>
+
+    <section class="box events-box">
+      <div class="events-page-heading">
+        <div>
+          <h2 class="section-title">Eventos del partido</h2>
+          <div class="event-page-kicker">Todos los eventos analizados</div>
+        </div>
+        <div class="events-page-meta">Registros {{ event_page.first_event_index }}-{{ event_page.last_event_index }} de {{ event_count }}</div>
+      </div>
+
+      <div class="event-list">
+        {% for evento in event_page.events %}
+        <div class="event-row">
+          <div class="event-dot">
+            <img class="event-icon" src="assets/transcripcion/{{ evento.imagen }}.png" alt="{{ evento.titulo }}" />
+          </div>
+          <div class="event-time">{{ evento.tiempo }}</div>
+          <div class="event-main">
+            <div class="event-title {{ 'magenta-text' if evento.equipo == 'aliado' else 'blue-text' if evento.equipo == 'rival' else '' }}">{{ evento.titulo }}</div>
+            <div class="event-sub">{{ evento.desc }}</div>
+          </div>
+          <div class="event-score">{{ evento.score }}</div>
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <footer class="footer event-page-footer">
+      <section class="footer-brand">
+        <img class="footer-logo" src="assets/logo_solo.png" alt="Logo Robocat" />
+        <div><div class="footer-label">Generado por</div><div class="footer-title">Fírmala, Schrödinger</div></div>
+      </section>
+      <section><div class="footer-label">Sistema</div><div>Lore, Yamis y Oscar Vision Analytics v11.5.2</div></section>
+      <section><div class="footer-label">Página</div><div class="page-num">{{ event_page.page_number }} / {{ total_page_count }}</div></section>
+      {% if qr_available %}<section><img class="qr" src="assets/qr.png" alt="QR del reporte" /></section>{% else %}<section></section>{% endif %}
+    </footer>
+  </main>
+  {% endfor %}
+</body>
+</html>

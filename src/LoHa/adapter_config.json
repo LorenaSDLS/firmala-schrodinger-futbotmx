@@ -1,0 +1,25 @@
+{
+  "alpha": 8,
+  "alpha_pattern": {},
+  "auto_mapping": {
+    "base_model_class": "Sam3Model",
+    "parent_library": "transformers.models.sam3.modeling_sam3"
+  },
+  "base_model_name_or_path": "facebook/sam3",
+  "exclude_modules": null,
+  "inference_mode": true,
+  "init_weights": true,
+  "layers_pattern": null,
+  "layers_to_transform": null,
+  "module_dropout": 0.0,
+  "modules_to_save": null,
+  "peft_type": "LOHA",
+  "peft_version": "0.18.1",
+  "r": 8,
+  "rank_dropout": 0.1,
+  "rank_pattern": {},
+  "revision": null,
+  "target_modules": ".*mask_decoder.*(q_proj|v_proj|out_proj)",
+  "task_type": null,
+  "use_effective_conv2d": false
+}

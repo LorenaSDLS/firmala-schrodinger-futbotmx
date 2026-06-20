@@ -35,10 +35,10 @@ El frontend permite seleccionar un video, observar el progreso del procesamiento
 ## Enlaces
 
 - **Video oficial de demostración:** [Ver demo](REEMPLAZAR_CON_ENLACE_DEMO)
-- **Reel público de Instagram:** [Ver Reel](REEMPLAZAR_CON_ENLACE_REEL)
+- **Reel público de Instagram:** [Ver Reel](https://www.instagram.com/reel/DZzU-4pOsm-/?igsh=NGt2aWl3ZDNiejUx) 
 - **Diseño conceptual:** [`docs/images/unity_concept.png`](docs/images/unity_concept.png)
 - **Vista del replay:** [`docs/images/unity_replay.png`](docs/images/unity_replay.png)
-- **Código de ejecutable de unity:** (https://drive.google.com/drive/folders/1IKbM6GA5Y9Oyyt2F17DVHwTxgsR2S8Ac?usp=sharing)
+- **Código de ejecutable de unity:** [Ver Carpeta con codigo] (https://drive.google.com/drive/folders/1IKbM6GA5Y9Oyyt2F17DVHwTxgsR2S8Ac?usp=sharing)
 
 ---
 

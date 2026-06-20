@@ -328,7 +328,7 @@ source .venv/bin/activate
 
 ```bash
 python -m pip install --upgrade pip setuptools wheel
-python -m pip install torch torchvision
+python -m pip install torch torchvision o python -m pip install torch torchvision --index-url https://download.pytorch.org/whl/cu132 si se tiene una tarjeta de vídeo
 python -m pip install -r requirements.txt
 python -m playwright install chromium
 ```
@@ -351,6 +351,25 @@ python -m src.main_supr "inputs/partido.mov" \
   --field-calibration hologram \
   --performance-profile quality \
   --pdf
+```
+
+## Procesamiento completo para equipos sin GPU
+
+```bash
+python -m src.main_supr "inputs/video-1096_singular_display.mov" \
+  --sam-mode none \
+  --performance-profile cpu \
+  --yolo-imgsz 416 \
+  --field-calibration hologram \
+  --no-field-debug \
+  --no-tracking-debug \
+  --replay-frame-stride 3 \
+  --pdf \
+  --narration \
+  --narration-mode duo \
+  --narration-engine edge \
+  --narration-script-engine template \
+  --narration-max-events 6
 ```
 
 ## Variante con DoRa
@@ -455,14 +474,13 @@ python -m pip freeze > environment_freeze.txt
 
 # Limitaciones
 
-- La precisión métrica depende de una buena calibración.
+- La precisión depende de una buena calibración.
 - Una oclusión total prolongada puede requerir un keyframe posterior.
 - Robots visualmente similares pueden permanecer temporalmente como desconocidos.
+- Cuando hay colisiones, el sistema a veces puede confundirse de robots.
 - SAM 3 con adaptadores es la etapa más costosa del pipeline.
-- La pelota pequeña puede perderse durante oclusiones o desenfoque.
-- Los candidatos de colisión requieren revisión.
+- La pelota pequeña puede perderse durante las oclusiones o desenfoque.
 - La tarjeta roja necesita evidencia visual de intervención o retiro.
-- Pases y tiros no se publican como oficiales mientras no exista evidencia suficientemente confiable.
 - El sistema se abstiene de producir coordenadas oficiales cuando la geometría no está validada.
 
 ---

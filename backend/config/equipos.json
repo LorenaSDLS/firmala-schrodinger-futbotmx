@@ -1,0 +1,27 @@
+{
+    "mode": "auto",
+    "muestras_minimas_por_robot": 8,
+    "muestras_maximas_por_robot": 48,
+    "margen_minimo_agrupamiento": 0.12,
+    "confianza_minima_muestra": 0.66,
+    "equipos_por_id": {},
+    "invertir_etiquetas": false,
+    "v4": {
+        "muestreo_cada_frames": 8,
+        "confianza_minima_muestra": 0.64,
+        "area_minima_caja": 700,
+        "maximo_hueco_tracklet_frames": 5,
+        "umbral_cambio_apariencia": 0.33,
+        "mediciones_minimas_tracklet": 5,
+        "muestras_maximas_tracklet": 18,
+        "interpolacion_robot_segundos": 0.42,
+        "renderizar_preview_corregido": true
+    },
+    "v5": {
+        "margen_minimo_parejas": 0.12,
+        "costo_maximo_asignacion_identidad": 0.62,
+        "margen_minimo_asignacion_identidad": 0.045,
+        "conservar_detecciones_no_resueltas": true,
+        "forzar_parejas": false
+    }
+}

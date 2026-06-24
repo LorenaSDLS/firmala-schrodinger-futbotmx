@@ -1,0 +1,23 @@
+flask
+numpy==1.26.4
+opencv-python==4.11.0.86
+matplotlib
+pandas
+reportlab
+filterpy
+supervision
+ultralytics==8.4.71
+torch==2.12.0
+torchvision==0.27.0
+transformers
+peft
+accelerate
+huggingface-hub
+safetensors
+pillow
+mesa
+flask-cors
+tqdm
+pytest
+playwright
+playwright install chromium
